@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify
-import joblib
+import pickle
 import pandas as pd
 
-# Cargar el modelo entrenado con joblib (NO pickle)
-model = joblib.load("modelo_recomendacion.pkl")
+# Cargar el modelo
+with open("modelo_recomendacion.pkl", "rb") as f:
+    model = pickle.load(f)
 
-# Columnas exactas que usaste en X
+# Columnas
 features = [
     'Descuento_Ofertado', 'Num_Productos', 'Frecuencia_Cliente', 'Ticket_Promedio',
     'carrito_Agua', 'carrito_Aguacate', 'carrito_Alimento para Gatos', 'carrito_Alimento para Perros',
@@ -25,8 +26,3 @@ def predecir():
     prob = model.predict_proba(df)[0][1]
     return jsonify({"probabilidad": round(prob, 4)})
 
-import os
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
